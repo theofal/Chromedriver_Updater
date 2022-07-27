@@ -5,12 +5,14 @@ import (
 )
 
 type Chrome struct {
+	path string
 }
 
 var lockChrome = &sync.Mutex{}
 var singleChromeInstance *Chrome
 
 func GetChromeInstance() *Chrome {
+
 	if singleChromeInstance == nil {
 		lockChrome.Lock()
 		defer lockChrome.Unlock()
@@ -21,3 +23,8 @@ func GetChromeInstance() *Chrome {
 	}
 	return singleChromeInstance
 }
+
+/*
+Verify Chrome exists
+Get Chrome version
+*/

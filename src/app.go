@@ -1,7 +1,7 @@
 package src
 
 import (
-	"fmt"
+	"Chromedriver_Updater/src/utils"
 	"go.uber.org/zap"
 	"sync"
 )
@@ -14,6 +14,7 @@ type App struct {
 var logger *zap.SugaredLogger
 var lock = &sync.Mutex{}
 var singleAppInstance *App
+var osInfo = utils.GetOSInfo()
 
 func GetApp(loggerInstance *zap.SugaredLogger) *App {
 	logger = loggerInstance
@@ -31,7 +32,19 @@ func GetApp(loggerInstance *zap.SugaredLogger) *App {
 	return singleAppInstance
 }
 
-func (app *App) PrintLogger(str string) {
-	fmt.Println(GetChromedriverInstance())
-	logger.Info(GetChromedriverInstance())
-}
+/*
+get the OS
+get the path
+Parse the major version
+get the chrome version
+get the chrome driver version
+verify if chrome driver version is compatible with chrome
+if app.get_chromedriver_version() >= app.get_chrome_version():
+print("Votre version de chromedriver est à jour.")
+else:
+print("Votre version de chromedriver n'est pas à jour.")
+if not compatible :
+delete old chromedriver
+download new chromedriver
+print every step in console
+*/
