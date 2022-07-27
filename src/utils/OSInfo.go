@@ -5,13 +5,13 @@ import (
 )
 
 type OSInfo struct {
-	GOARCH string
 	GOOS   string
+	GOARCH string
 }
 
 func GetOSInfo() *OSInfo {
 	return &OSInfo{
-		GOARCH: runtime.GOARCH,
 		GOOS:   runtime.GOOS,
+		GOARCH: runtime.GOARCH,
 	}
 }

@@ -3,7 +3,6 @@ package src
 import (
 	"Chromedriver_Updater/src/utils"
 	"go.uber.org/zap"
-	"sync"
 )
 
 type App struct {
@@ -12,24 +11,18 @@ type App struct {
 }
 
 var logger *zap.SugaredLogger
-var lock = &sync.Mutex{}
-var singleAppInstance *App
 var osInfo = utils.GetOSInfo()
 
-func GetApp(loggerInstance *zap.SugaredLogger) *App {
+func NewApp(loggerInstance *zap.SugaredLogger) *App {
 	logger = loggerInstance
-	if singleAppInstance == nil {
-		lock.Lock()
-		defer lock.Unlock()
-		if singleAppInstance == nil {
-			logger.Debug("Creating App instance.")
-			singleAppInstance = &App{
-				chrome:       GetChromeInstance(),
-				chromedriver: GetChromedriverInstance(),
-			}
-		}
+	return &App{
+		chrome:       &Chrome{},
+		chromedriver: &Chromedriver{},
 	}
-	return singleAppInstance
+}
+
+func (app *App) PrintOsInfo() {
+	logger.Info(osInfo)
 }
 
 /*
