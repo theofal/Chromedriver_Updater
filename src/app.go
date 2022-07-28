@@ -26,7 +26,6 @@ func (app *App) PrintOsInfo() {
 }
 
 /*
-get the OS
 get the path
 Parse the major version
 get the chrome version

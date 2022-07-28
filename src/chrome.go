@@ -2,6 +2,7 @@ package src
 
 import (
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -10,7 +11,7 @@ type Chrome struct {
 }
 
 func (chrome *Chrome) verifyChromeExists() (bool, string) {
-	if strings.Contains(osInfo.GOOS, "darwin") {
+	if strings.ToLower(osInfo.GOOS) == "darwin" {
 		chrome.path = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 		_, err := os.Stat(chrome.path)
 		if os.IsNotExist(err) {
@@ -18,20 +19,48 @@ func (chrome *Chrome) verifyChromeExists() (bool, string) {
 		}
 		return true, chrome.path
 	}
-	if strings.Contains(osInfo.GOOS, "linux") {
-		chrome.path = ""
-		return false, "Linux not implemented yet."
+	if strings.ToLower(osInfo.GOOS) == "linux" {
+		// TODO: change to implement other names of chrome
+		out, err := exec.Command("which", "google-chrome").Output()
+		if err != nil {
+			logger.Fatal(err)
+		}
+		_, err = os.Stat(string(out))
+		if os.IsNotExist(err) {
+			return false, ""
+		}
+		chrome.path = string(out)
+		return true, chrome.path
 	}
-	if strings.Contains(osInfo.GOOS, "win") {
+	if strings.Contains(strings.ToLower(osInfo.GOOS), "win") {
 		chrome.path = ""
 		return false, "Windows not implemented yet."
 	}
-	logger.Errorf("%v not supported yet.", osInfo.GOOS)
-	os.Exit(0)
+	logger.Fatalf("%v not supported yet.", osInfo.GOOS)
 	return false, ""
+}
+
+func (chrome *Chrome) getChromeVersion() string {
+	chromeExists, _ := chrome.verifyChromeExists()
+	if chromeExists {
+		if strings.ToLower(osInfo.GOOS) == "darwin" || strings.ToLower(osInfo.GOOS) == "linux" {
+			out, err := exec.Command(chrome.path, "-v").Output()
+			if err != nil {
+				logger.Fatal(err)
+			}
+			return string(out)
+		}
+		if strings.Contains(strings.ToLower(osInfo.GOOS), "win") {
+			return "Windows not implemented yet."
+		}
+		logger.Fatalf("%v not supported yet.", osInfo.GOOS)
+		return ""
+	}
+	return ""
 }
 
 /*
 Verify Chrome exists
 Get Chrome version
+https://developer.chrome.com/docs/versionhistory/examples/
 */
