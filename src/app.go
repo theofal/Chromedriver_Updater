@@ -13,10 +13,11 @@ type App struct {
 }
 
 var logger *zap.SugaredLogger
-var osInfo = utils.GetOSInfo()
+var osInfo *utils.OSInfo
 
 func NewApp(loggerInstance *zap.SugaredLogger) *App {
 	logger = loggerInstance
+	osInfo = utils.GetOSInfo(logger)
 	return &App{
 		chrome:       &Chrome{},
 		chromedriver: &Chromedriver{},
@@ -36,14 +37,13 @@ func version1IsGreater(chromeVersion, chromedriverVersion string) bool {
 }*/
 
 func parseMajorVersion(version string) string {
-	fmt.Println(strings.Split(version, ".")[0])
 	return strings.Split(version, ".")[0]
 }
 
 func (app *App) PrintOsInfo() {
 	fmt.Println(app.chrome.getChromeVersion())
 	fmt.Println(app.chromedriver.getChromedriverVersion())
-	fmt.Println(getLatestReleaseForSpecificVersion(parseMajorVersion(app.chrome.version)))
+	fmt.Println(app.chromedriver.downloadChromedriver(getLatestReleaseForSpecificVersion(parseMajorVersion(app.chrome.version))))
 }
 
 /*
