@@ -7,5 +7,6 @@ import (
 
 func main() {
 	logger := utils.InitLogger().Sugar()
-	src.NewApp(logger).PrintOsInfo()
+	app := src.NewApp(logger)
+	app.PrintOsInfo()
 }
