@@ -37,13 +37,12 @@ func verifyChromeExists() (bool, string) {
 		chromePath := "Windows not implemented yet."
 		return false, chromePath
 	}
-	logger.Fatalf("%v not supported yet.", osInfo.OS)
+	logger.Fatalf("%s not supported yet.", osInfo.OS)
 	return false, ""
 }
 
 func (chrome *Chrome) getChromeVersion() string {
 	var chromeExists, chromePath = verifyChromeExists()
-	logger.Infof("chrome exists: %v", chromeExists)
 	if chromeExists {
 		if osInfo.OS == "mac" || osInfo.OS == "linux" {
 			logger.Info("Getting Google Chrome version")
@@ -52,17 +51,17 @@ func (chrome *Chrome) getChromeVersion() string {
 				logger.Fatal(err)
 			}
 			chrome.version = strings.Split(string(out), " ")[2]
-			logger.Debugf("Chrome app detected: %v, %v", chrome.version, chromePath)
+			logger.Infof("Google Chrome detected: %s, %s", chrome.version, chromePath)
 			return chrome.version
 		}
 		if osInfo.OS == "win" {
 			logger.Fatal("Windows not supported yet.")
 			return ""
 		}
-		logger.Fatalf("%v not supported yet.", osInfo.OS)
+		logger.Fatalf("%s not supported yet.", osInfo.OS)
 		return ""
 	}
-	logger.Debugf("Chrome app detected: %v", false)
+	logger.Debugf("Google Chrome detected: %v", false)
 	return ""
 }
 

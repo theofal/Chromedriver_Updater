@@ -1,8 +1,8 @@
 package src
 
 import (
+	"Chromedriver_Updater/src/utils"
 	"fmt"
-	"github.com/artdarek/go-unzip"
 	"io"
 	"log"
 	"net/http"
@@ -42,28 +42,31 @@ func (chromedriver *Chromedriver) verifyChromedriverExists() bool {
 		//chromePath := "Windows not implemented yet."
 		return false
 	}
-	logger.Fatalf("%v not supported yet.", osInfo.OS)
+	logger.Fatalf("%s not supported yet.", osInfo.OS)
 	return false
 }
 
 func (chromedriver *Chromedriver) getChromedriverVersion() string {
 	if chromedriver.verifyChromedriverExists() {
 		if osInfo.OS == "mac" || osInfo.OS == "linux" {
-			logger.Info("Getting Google Chrome version")
+			logger.Info("Getting Chromedriver version")
 			out, err := exec.Command(chromedriver.path, "--version").Output()
 			if err != nil {
 				logger.Fatal(err)
 			}
-			chromedriver.version = string(out)
+
+			chromedriver.version = strings.Split(string(out), " ")[1]
+			logger.Infof("Chromedriver binary detected: %s, %s", chromedriver.version, chromedriver.path)
 			return chromedriver.version
 		}
 		if osInfo.OS == "win" {
 			logger.Fatal("Windows not implemented yet.")
 			return chromedriver.version
 		}
-		logger.Fatalf("%v not supported yet.", osInfo.OS)
+		logger.Fatalf("%s not supported yet.", osInfo.OS)
 		return ""
 	}
+	logger.Infof("Chromedriver detected: %v", false)
 	return ""
 }
 
@@ -92,7 +95,7 @@ func getLatestReleaseForSpecificVersion(majorVersion string) string {
 
 func (chromedriver *Chromedriver) downloadChromedriver(version string) *Chromedriver {
 	downloadPath := fmt.Sprintf(
-		"https://chromedriver.storage.googleapis.com/%v/chromedriver_%v64.zip", version, osInfo.OS, // osInfo.ARCH,
+		"https://chromedriver.storage.googleapis.com/%s/chromedriver_%s64.zip", version, osInfo.OS, // osInfo.ARCH,
 	) //TODO fix ARCH
 	zipFilePath := "/tmp/chromedriver.zip"
 
@@ -135,8 +138,8 @@ func (chromedriver *Chromedriver) downloadChromedriver(version string) *Chromedr
 func (chromedriver *Chromedriver) unzipChromedriver() *Chromedriver {
 	chromedriver.removeFile(chromedriver.path)
 
-	uz := unzip.New("/tmp/chromedriver.zip", strings.Replace(chromedriver.path, "chromedriver", "", 1))
-	err := uz.Extract()
+	zipper := utils.NewZipper("/tmp/chromedriver.zip", strings.Replace(chromedriver.path, "chromedriver", "", 1))
+	err := zipper.UnzipSource()
 	if err != nil {
 		logger.Error(err)
 	}
@@ -144,6 +147,7 @@ func (chromedriver *Chromedriver) unzipChromedriver() *Chromedriver {
 	// si chromedriver.path diff de nil, on le met là
 	// sinon, on le met à l'endroit par défaut /usr/local/bin/chromedriver
 	// supprimer le zip file
+	logger.Infof("Your chromedriver has been updated. %s, %s", chromedriver.version, chromedriver.path)
 	return chromedriver
 }
 

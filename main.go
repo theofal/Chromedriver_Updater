@@ -1,12 +1,12 @@
 package main
 
 import (
-	"Chromedriver_Updater/src"       // TODO: update to "github.com/theofal/Chromedriver_Updater/src" when public
-	"Chromedriver_Updater/src/utils" // TODO: update to "github.com/theofal/Chromedriver_Updater/src/utils" when public
+	"Chromedriver_Updater/src" // TODO: update to "github.com/theofal/Chromedriver_Updater/src" when public
+	"Chromedriver_Updater/src/utils/zapLogger"
 )
 
 func main() {
-	logger := utils.InitLogger().Sugar()
+	logger := zapLogger.InitLogger().Sugar()
 	app := src.NewApp(logger)
-	app.PrintOsInfo()
+	app.InitApp()
 }

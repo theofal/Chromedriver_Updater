@@ -1,4 +1,4 @@
-package utils
+package zapLogger
 
 import (
 	"github.com/natefinch/lumberjack"
@@ -12,7 +12,7 @@ var (
 	logger *zap.Logger
 )
 
-// InitLogger : logger initialisation.
+// InitLogger : zapLogger initialisation.
 func InitLogger() *zap.Logger {
 	writeSyncer := getLogWriter()
 	encoder, encoderColored := getEncoder(), getColoredEncoder()

@@ -11,7 +11,10 @@ type OSInfo struct {
 	ARCH string
 }
 
-func GetOSInfo(logger *zap.SugaredLogger) *OSInfo {
+var logger *zap.SugaredLogger
+
+func GetOSInfo(loggerInstance *zap.SugaredLogger) *OSInfo {
+	logger = loggerInstance
 	platform := runtime.GOOS
 	arch := runtime.GOARCH
 	if strings.ToLower(runtime.GOOS) == "darwin" {

@@ -2,7 +2,7 @@ package src
 
 import (
 	"Chromedriver_Updater/src/utils"
-	"fmt"
+	"github.com/blang/semver/v4"
 	"go.uber.org/zap"
 	"strings"
 )
@@ -24,40 +24,30 @@ func NewApp(loggerInstance *zap.SugaredLogger) *App {
 	}
 }
 
-/*func versionsAreEqual(chromeVersion, chromedriverVersion string) bool {
-	v1, _ := semver.Make(chromeVersion)
-	v2, _ := semver.Make(chromedriverVersion)
-	return v1.Compare(v2) == 0
-}
-
-func version1IsGreater(chromeVersion, chromedriverVersion string) bool {
+func firstArgIsGreater(chromeVersion, chromedriverVersion string) bool {
 	v1, _ := semver.Make(chromeVersion)
 	v2, _ := semver.Make(chromedriverVersion)
 	return v1.Compare(v2) == 1
-}*/
+}
 
 func parseMajorVersion(version string) string {
 	return strings.Split(version, ".")[0]
 }
 
-func (app *App) PrintOsInfo() {
-	fmt.Println(app.chrome.getChromeVersion())
-	fmt.Println(app.chromedriver.getChromedriverVersion())
-	fmt.Println(app.chromedriver.downloadChromedriver(getLatestReleaseForSpecificVersion(parseMajorVersion(app.chrome.version))))
+func (app *App) InitApp() *App {
+	chromeVersion := app.chrome.getChromeVersion()
+	chromedriverVersion := app.chromedriver.getChromedriverVersion()
+
+	if firstArgIsGreater(chromeVersion, chromedriverVersion) || chromedriverVersion == "" {
+		app.chromedriver = app.chromedriver.downloadChromedriver(getLatestReleaseForSpecificVersion(parseMajorVersion(app.chrome.version)))
+		return app
+	}
+
+	logger.Info("Your chromedriver is up to date.")
+	return app
 }
 
 /*
-[] get the path
-[] Parse the major version
-[x] get the chrome version
-[] get the chrome driver version
-[] verify if chrome driver version is compatible with chrome
-[] if app.get_chromedriver_version() >= app.get_chrome_version():
-print("Votre version de chromedriver est à jour.")
-else:
-print("Votre version de chromedriver n'est pas à jour.")
-if not compatible :
-[] delete old chromedriver
-[] download new chromedriver
 [] print every step in console
+[] implement flags
 */
