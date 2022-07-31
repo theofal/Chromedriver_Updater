@@ -25,6 +25,11 @@ func NewApp(loggerInstance *zap.SugaredLogger) *App {
 }
 
 func firstArgIsGreater(chromeVersion, chromedriverVersion string) bool {
+
+	if chromedriverVersion == "" {
+		return true
+	}
+
 	v1, v2 := strings.Split(chromeVersion, "."), strings.Split(chromedriverVersion, ".")
 	var version2Int []int
 	var version1Int []int
@@ -81,7 +86,7 @@ func (app *App) InitApp(version int, strArgs string) *App {
 		return app
 	}
 
-	if firstArgIsGreater(chromeVersion, chromedriverVersion) || chromedriverVersion == "" {
+	if firstArgIsGreater(chromeVersion, chromedriverVersion) {
 		app.chromedriver = app.chromedriver.downloadChromedriver(getLatestReleaseForSpecificVersion(parseMajorVersion(app.chrome.version)))
 		return app
 	}

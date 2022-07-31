@@ -20,8 +20,6 @@ run-docker:
 	docker run -it --rm --name chromedriver_updater chromedriver_updater
 shell-docker:
 	docker container run -it chromedriver_updater /bin/bash
-clean-docker-images:
-	./utils/clean.sh
 clean-docker-volumes:
 	docker volume rm $(docker volume ls -q)
 test-docker:

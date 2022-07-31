@@ -21,6 +21,10 @@ func main() {
 		logger.Fatalf("Version number cannot be negative.")
 	}
 
+	if *output == "" {
+		*output = "/usr/local/bin"
+	}
+
 	app := src.NewApp(logger)
 	app.InitApp(*version, *output)
 }
