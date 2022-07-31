@@ -12,7 +12,7 @@ var (
 	logger *zap.Logger
 )
 
-// InitLogger : zapLogger initialisation.
+// InitLogger : zaplogger initialisation.
 func InitLogger() *zap.Logger {
 	writeSyncer := getLogWriter()
 	encoder, encoderColored := getEncoder(), getColoredEncoder()
