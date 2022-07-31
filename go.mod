@@ -1,4 +1,4 @@
-module Chromedriver_Updater
+module github.com/theofal/Chromedriver_Updater
 
 go 1.18
 
@@ -6,6 +6,7 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	go.uber.org/zap v1.21.0
+
 )
 
 require (

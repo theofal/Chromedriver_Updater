@@ -1,8 +1,8 @@
 package src
 
 import (
-	"Chromedriver_Updater/src/utils"
 	"github.com/blang/semver/v4"
+	"github.com/theofal/Chromedriver_Updater/src/utils"
 	"go.uber.org/zap"
 	"strconv"
 	"strings"

@@ -1,8 +1,8 @@
 package src
 
 import (
-	"Chromedriver_Updater/src/utils"
 	"fmt"
+	"github.com/theofal/Chromedriver_Updater/src/utils"
 	"io"
 	"log"
 	"net/http"
@@ -26,8 +26,7 @@ func (chromedriver *Chromedriver) verifyChromedriverExists() bool {
 		return chromedriver.exists
 	}
 	if osInfo.OS == "linux" {
-		// TODO: change to implement other names of chrome
-		out, err := exec.Command("which", "google-chrome").Output()
+		out, err := exec.Command("which", "chromedriver").Output()
 		if err != nil {
 			logger.Fatal(err)
 		}

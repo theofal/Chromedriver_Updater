@@ -1,4 +1,4 @@
-package zapLogger
+package zaplogger
 
 import (
 	"github.com/natefinch/lumberjack"

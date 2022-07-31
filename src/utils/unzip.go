@@ -9,19 +9,19 @@ import (
 	"strings"
 )
 
-type Zipper struct {
+type zipper struct {
 	source      string
 	destination string
 }
 
-func NewZipper(source, destination string) *Zipper {
-	return &Zipper{
+func NewZipper(source, destination string) *zipper {
+	return &zipper{
 		source:      source,
 		destination: destination,
 	}
 }
 
-func (zipper *Zipper) UnzipSource() error {
+func (zipper *zipper) UnzipSource() error {
 	// Source: https://gosamples.dev/unzip-file/
 
 	logger.Infof("Extraction of %s started.", zipper.source)

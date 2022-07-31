@@ -36,8 +36,8 @@ Usage of ./Chromedriver_Updater:
 
 [x] Tested on mac amd64
 
-[] Tested on mac arm64
+[ ] Tested on mac arm64
 
-[] Tested on linux
+[ ] Tested on linux
 
-[] Tested on windows
+[ ] Tested on windows

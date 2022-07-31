@@ -1,13 +1,13 @@
 package main
 
 import (
-	"Chromedriver_Updater/src" // TODO: update to "github.com/theofal/Chromedriver_Updater/src" when public
-	"Chromedriver_Updater/src/utils/zapLogger"
 	"flag"
+	"github.com/theofal/Chromedriver_Updater/src"
+	"github.com/theofal/Chromedriver_Updater/src/utils/zaplogger"
 )
 
 func main() {
-	logger := zapLogger.InitLogger().Sugar()
+	logger := zaplogger.InitLogger().Sugar()
 
 	// flags:
 	// -v (--version) get the latest version from a given major version (int)
