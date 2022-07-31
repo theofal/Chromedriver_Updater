@@ -4,10 +4,11 @@ import (
 	"flag"
 	"github.com/theofal/Chromedriver_Updater/src"
 	"github.com/theofal/Chromedriver_Updater/src/utils/zaplogger"
+	"go.uber.org/zap/zapcore"
 )
 
 func main() {
-	logger := zaplogger.InitLogger().Sugar()
+	logger := zaplogger.InitLogger(zapcore.DebugLevel, zapcore.DebugLevel).Sugar()
 
 	// flags:
 	// -v (--version) get the latest version from a given major version (int)

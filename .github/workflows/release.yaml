@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         # build and publish in parallel: linux/amd64, windows/amd64, darwin/amd64
-        goos: [linux, darwin] #TODO: add windows 
+        goos: [linux, darwin] #TODO: add windows
         goarch: [amd64]
     steps:
       - uses: actions/checkout@v3

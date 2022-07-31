@@ -7,7 +7,9 @@ endif
 run:
 	go run $(PROJECT_PATH)
 test:
-	go test -v --cover
+	go test -v --cover ./...
+benchmark:
+	go test -v ./... -bench=. -count 5 -run=^#
 update-dependencies:
 	go get -u $(PROJECT_PATH)/...
 verify-dependencies:

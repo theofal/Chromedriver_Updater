@@ -13,12 +13,12 @@ var (
 )
 
 // InitLogger : zaplogger initialisation.
-func InitLogger() *zap.Logger {
+func InitLogger(consoleLogLevel zapcore.Level, fileLogLevel zapcore.Level) *zap.Logger {
 	writeSyncer := getLogWriter()
 	encoder, encoderColored := getEncoder(), getColoredEncoder()
 	core := zapcore.NewTee(
-		zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel),                       //logfile output
-		zapcore.NewCore(encoderColored, zapcore.AddSync(os.Stdout), zapcore.DebugLevel), //console output
+		zapcore.NewCore(encoder, writeSyncer, fileLogLevel),                          //logfile output
+		zapcore.NewCore(encoderColored, zapcore.AddSync(os.Stdout), consoleLogLevel), //console output
 	)
 	logger = zap.New(core, zap.AddCaller())
 	return logger
