@@ -21,5 +21,14 @@ jobs:
       - name: Build
         run: go build -v ./...
 
+      - name: Run go vet
+        run: go vet ./...
+
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
       - name: Test
         run: go test -v ./...
