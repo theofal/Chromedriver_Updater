@@ -17,10 +17,11 @@ func GetOSInfo(loggerInstance *zap.SugaredLogger) *OSInfo {
 	logger = loggerInstance
 	platform := runtime.GOOS
 	arch := runtime.GOARCH
+	logger.Debugf("GOOS: %s, GOARCH: %s", runtime.GOOS, runtime.GOARCH)
 	if strings.ToLower(runtime.GOOS) == "darwin" {
 		platform = "mac"
 		arch = "64"
-		if !strings.Contains(arch, "amd") {
+		if strings.Contains(runtime.GOARCH, "arm") {
 			arch = "64_m1"
 		}
 		logger.Debugf("OS: %v, Arch: %v", platform, arch)

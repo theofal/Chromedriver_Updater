@@ -20,7 +20,7 @@ type Chromedriver struct {
 func (chromedriver *Chromedriver) verifyChromedriverExists() bool {
 	logger.Info("Verifying chromedriver exists.")
 	if osInfo.OS == "mac" {
-		chromedriver.path = "/usr/local/bin/chromedriver"
+		//chromedriver.path = "/usr/local/bin/chromedriver"
 		_, err := os.Stat(chromedriver.path)
 		chromedriver.exists = !os.IsNotExist(err)
 		return chromedriver.exists
@@ -95,10 +95,12 @@ func getLatestReleaseForSpecificVersion(majorVersion string) string {
 
 func (chromedriver *Chromedriver) downloadChromedriver(version string) *Chromedriver {
 	downloadPath := fmt.Sprintf(
-		"https://chromedriver.storage.googleapis.com/%s/chromedriver_%s64.zip", version, osInfo.OS, // osInfo.ARCH,
-	) //TODO fix ARCH
+		"https://chromedriver.storage.googleapis.com/%s/chromedriver_%s%s.zip", version, osInfo.OS, osInfo.ARCH,
+	)
 	zipFilePath := "/tmp/chromedriver.zip"
+	logger.Debugf("Downloading from: %s", downloadPath)
 
+	//TODO: Sanitize
 	resp, err := http.Get(downloadPath)
 	if err != nil {
 		logger.Errorf("An error occurred while trying to reach website: %s", err)
@@ -111,9 +113,9 @@ func (chromedriver *Chromedriver) downloadChromedriver(version string) *Chromedr
 		}
 	}(resp.Body)
 
-	logger.Debug("Response status: ", resp.Status)
+	logger.Debug("Chromedriver downloader website response status: ", resp.Status)
 	if resp.StatusCode != 200 {
-		logger.Errorf("HTML response: %s", err)
+		logger.Fatalf("HTML response: %s", err)
 		return chromedriver
 	}
 
@@ -122,7 +124,12 @@ func (chromedriver *Chromedriver) downloadChromedriver(version string) *Chromedr
 	if err != nil {
 		logger.Errorf("An error occurred while creating file: %s", err)
 	}
-	defer out.Close()
+	defer func(out *os.File) {
+		err := out.Close()
+		if err != nil {
+			logger.Errorf("An error occurred while closing destination file: %s", err)
+		}
+	}(out)
 
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
@@ -144,9 +151,6 @@ func (chromedriver *Chromedriver) unzipChromedriver() *Chromedriver {
 		logger.Error(err)
 	}
 	chromedriver.removeFile("/tmp/chromedriver.zip")
-	// si chromedriver.path diff de nil, on le met là
-	// sinon, on le met à l'endroit par défaut /usr/local/bin/chromedriver
-	// supprimer le zip file
 	logger.Infof("Your chromedriver has been updated. %s, %s", chromedriver.version, chromedriver.path)
 	return chromedriver
 }

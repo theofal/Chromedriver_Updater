@@ -4,6 +4,7 @@ import (
 	"Chromedriver_Updater/src/utils"
 	"github.com/blang/semver/v4"
 	"go.uber.org/zap"
+	"strconv"
 	"strings"
 )
 
@@ -34,9 +35,18 @@ func parseMajorVersion(version string) string {
 	return strings.Split(version, ".")[0]
 }
 
-func (app *App) InitApp() *App {
+func (app *App) InitApp(version int, strArgs string) *App {
+	app.chromedriver.path = strArgs + "/chromedriver" //TODO Renforcer
+	logger.Infof("Chromedriver path set to %s.", app.chromedriver.path)
+
 	chromeVersion := app.chrome.getChromeVersion()
 	chromedriverVersion := app.chromedriver.getChromedriverVersion()
+
+	if version != 0 {
+		vers := strconv.Itoa(version)
+		app.chromedriver = app.chromedriver.downloadChromedriver(getLatestReleaseForSpecificVersion(parseMajorVersion(vers)))
+		return app
+	}
 
 	if firstArgIsGreater(chromeVersion, chromedriverVersion) || chromedriverVersion == "" {
 		app.chromedriver = app.chromedriver.downloadChromedriver(getLatestReleaseForSpecificVersion(parseMajorVersion(app.chrome.version)))

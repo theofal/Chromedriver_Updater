@@ -21,16 +21,11 @@ func verifyChromeExists() (bool, string) {
 		return true, chromePath
 	}
 	if osInfo.OS == "linux" {
-		// TODO: change to implement other names of chrome packages
-		out, err := exec.Command("which", "google-chrome").Output()
-		if err != nil {
-			logger.Fatal(err)
+		chromePath := getChromeVersionLinux()
+		logger.Debugf("Google Chrome path set to: %s", chromePath)
+		if chromePath == "" {
+			return false, chromePath
 		}
-		_, err = os.Stat(string(out))
-		if os.IsNotExist(err) {
-			return false, ""
-		}
-		chromePath := string(out)
 		return true, chromePath
 	}
 	if osInfo.OS == "win" {
@@ -62,6 +57,28 @@ func (chrome *Chrome) getChromeVersion() string {
 		return ""
 	}
 	logger.Debugf("Google Chrome detected: %v", false)
+	return ""
+}
+
+func getChromeVersionLinux() string {
+	list := []string{
+		"google-chrome",
+		"google-chrome-stable",
+		"google-chrome-beta",
+		"google-chrome-dev",
+		"chromium-browser",
+		"chromium",
+	}
+
+	for _, appName := range list {
+		out, err := exec.Command("which", appName).Output()
+		logger.Debugf("Trying to find %s binary: %s", appName, string(out))
+		if err == nil {
+			return string(out)
+		}
+		continue
+	}
+	logger.Error("Could not find Google Chrome app.")
 	return ""
 }
 
