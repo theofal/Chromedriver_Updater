@@ -23,6 +23,7 @@ func main() {
 
 	if *output == "" {
 		*output = "/usr/local/bin"
+		logger.Info("Empty flag detected, file path set to: /usr/local/bin")
 	}
 
 	app := src.NewApp(logger)
