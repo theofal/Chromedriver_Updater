@@ -1,7 +1,6 @@
 package src
 
 import (
-	"github.com/blang/semver/v4"
 	"github.com/theofal/Chromedriver_Updater/src/utils"
 	"go.uber.org/zap"
 	"strconv"
@@ -26,9 +25,43 @@ func NewApp(loggerInstance *zap.SugaredLogger) *App {
 }
 
 func firstArgIsGreater(chromeVersion, chromedriverVersion string) bool {
-	v1, _ := semver.Make(chromeVersion)
-	v2, _ := semver.Make(chromedriverVersion)
-	return v1.Compare(v2) == 1
+	v1, v2 := strings.Split(chromeVersion, "."), strings.Split(chromedriverVersion, ".")
+	var version2Int []int
+	var version1Int []int
+
+	if len(v1) > len(v2) {
+		for i := 1; i <= len(v1)-len(v2); i++ {
+			v2 = append(v2, "0")
+		}
+	}
+	if len(v1) < len(v2) {
+		for i := 1; i <= len(v2)-len(v1); i++ {
+			v1 = append(v1, "0")
+		}
+	}
+	for index := range v1 {
+		tmp, err := strconv.Atoi(v1[index])
+		if err != nil {
+			logger.Fatalf("An error occurred while converting string to int: %s", err)
+		}
+		version1Int = append(version1Int, tmp)
+
+		tmp, err = strconv.Atoi(v2[index])
+		if err != nil {
+			logger.Fatalf("An error occurred while converting string to int: %s", err)
+		}
+		version2Int = append(version2Int, tmp)
+
+		if version1Int[index] > version2Int[index] {
+			logger.Infof("Your Chromedriver version (%s) is behind your Google Chrome version (%s).", chromedriverVersion, chromeVersion)
+			return true
+		}
+		if version1Int[index] == version2Int[index] {
+			continue
+		}
+		return false
+	}
+	return false
 }
 
 func parseMajorVersion(version string) string {
@@ -53,7 +86,7 @@ func (app *App) InitApp(version int, strArgs string) *App {
 		return app
 	}
 
-	logger.Info("Your chromedriver is up to date.")
+	logger.Infof("Your chromedriver is up to date (version: %s).", chromedriverVersion)
 	return app
 }
 

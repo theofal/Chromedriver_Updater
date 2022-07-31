@@ -3,6 +3,7 @@ package src
 import (
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -24,7 +25,7 @@ func verifyChromeExists() (bool, string) {
 		chromePath := getChromeVersionLinux()
 		logger.Debugf("Google Chrome path set to: %s", chromePath)
 		if chromePath == "" {
-			return false, chromePath
+			logger.Fatal("Could not find Google Chrome app.")
 		}
 		return true, chromePath
 	}
@@ -43,7 +44,7 @@ func (chrome *Chrome) getChromeVersion() string {
 			logger.Info("Getting Google Chrome version")
 			out, err := exec.Command(chromePath, "--version").Output()
 			if err != nil {
-				logger.Fatal(err)
+				logger.Fatalf("An error occured while getting the chrome version: %s", err)
 			}
 			chrome.version = strings.Split(string(out), " ")[2]
 			logger.Infof("Google Chrome detected: %s, %s", chrome.version, chromePath)
@@ -56,7 +57,7 @@ func (chrome *Chrome) getChromeVersion() string {
 		logger.Fatalf("%s not supported yet.", osInfo.OS)
 		return ""
 	}
-	logger.Debugf("Google Chrome detected: %v", false)
+	logger.Fatalf("Google Chrome detected: %v", false)
 	return ""
 }
 
@@ -72,16 +73,17 @@ func getChromeVersionLinux() string {
 
 	for _, appName := range list {
 		out, err := exec.Command("which", appName).Output()
-		logger.Debugf("Trying to find %s binary: %s", appName, string(out))
+		logger.Debugf("Trying to find %s binary: %s", appName, strings.Split(string(out), "\n")[0])
 		if err == nil {
-			return string(out)
+			output := strings.Split(string(out), "\n")[0]
+			symlinks, err := filepath.EvalSymlinks(output)
+			if err != nil {
+				logger.Fatalf("An error occurred while evaluation symlink: %s", err)
+			}
+			return symlinks
 		}
 		continue
 	}
-	logger.Error("Could not find Google Chrome app.")
+	logger.Fatal("Could not find Google Chrome app.")
 	return ""
 }
-
-/*
-https://developer.chrome.com/docs/versionhistory/examples/
-*/

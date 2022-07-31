@@ -19,23 +19,11 @@ type Chromedriver struct {
 
 func (chromedriver *Chromedriver) verifyChromedriverExists() bool {
 	logger.Info("Verifying chromedriver exists.")
-	if osInfo.OS == "mac" {
+	if osInfo.OS == "mac" || osInfo.OS == "linux" {
 		//chromedriver.path = "/usr/local/bin/chromedriver"
 		_, err := os.Stat(chromedriver.path)
 		chromedriver.exists = !os.IsNotExist(err)
 		return chromedriver.exists
-	}
-	if osInfo.OS == "linux" {
-		out, err := exec.Command("which", "chromedriver").Output()
-		if err != nil {
-			logger.Fatal(err)
-		}
-		_, err = os.Stat(string(out))
-		if os.IsNotExist(err) {
-			return false
-		}
-		chromedriver.path = string(out)
-		return true
 	}
 	if osInfo.OS == "win" {
 		//chromePath := "Windows not implemented yet."
@@ -97,7 +85,7 @@ func (chromedriver *Chromedriver) downloadChromedriver(version string) *Chromedr
 		"https://chromedriver.storage.googleapis.com/%s/chromedriver_%s%s.zip", version, osInfo.OS, osInfo.ARCH,
 	)
 	zipFilePath := "/tmp/chromedriver.zip"
-	logger.Debugf("Downloading from: %s", downloadPath)
+	logger.Infof("Downloading from: %s", downloadPath)
 
 	//TODO: Sanitize
 	resp, err := http.Get(downloadPath)
