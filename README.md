@@ -34,10 +34,10 @@ Usage of ./Chromedriver_Updater:
 
 ## Troubleshooting
 
-[x] Tested on mac amd64
+- [x] Tested on mac amd64
 
-[ ] Tested on mac arm64
+- [x] Tested on mac arm64
 
-[ ] Tested on linux
+- [x] Tested on linux
 
-[ ] Tested on windows
+- [ ] Tested on windows
