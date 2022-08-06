@@ -77,7 +77,6 @@ func unzipFile(file *zip.File, destination string) error {
 		logger.Fatalf("An error occurred while creating directory tree: %s", err)
 		return err
 	}
-
 	// 6. Create a destination file for unzipped content
 	destinationFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 	if err != nil {
@@ -91,7 +90,7 @@ func unzipFile(file *zip.File, destination string) error {
 		}
 	}(destinationFile)
 
-	logger.Infof("Extracting file: %s.", file.Name)
+	logger.Infof("Extracting Chromedriver binary to: %s.", filePath)
 
 	// 7. Unzip the content of a file and copy it to the destination file
 	zippedFile, err := file.Open()

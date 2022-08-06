@@ -43,11 +43,11 @@ func getColoredEncoder() zapcore.Encoder {
 // Save file log cut.
 func getLogWriter() zapcore.WriteSyncer {
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   "./logs/chromedriverUpdaterLogs.log", // Log name
-		MaxSize:    1,                                    // File content size, MB
-		MaxBackups: 5,                                    // Maximum number of backups
-		MaxAge:     30,                                   // Maximum number of days to keep old files
-		Compress:   false,                                // Is the file compressed
+		Filename:   "./src/logs/chromedriverUpdaterLogs.log", // Log name
+		MaxSize:    1,                                        // File content size, MB
+		MaxBackups: 5,                                        // Maximum number of backups
+		MaxAge:     30,                                       // Maximum number of days to keep old files
+		Compress:   false,                                    // Is the file compressed
 	}
 	return zapcore.AddSync(lumberJackLogger)
 }

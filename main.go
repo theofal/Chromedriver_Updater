@@ -18,7 +18,7 @@ func main() {
 	// flags:
 	// -v (--version) get the latest version from a given major version (int)
 	// -o (--output) set chromedriver path manually (default /usr/local/bin) (string)
-	output := flag.String("f", "", "Specify the folder where the binary will be installed")
+	output := flag.String("f", viper.GetString("configPath"), "Specify the folder where the binary will be installed")
 	install := flag.Bool("i", false, "App configuration.")
 	version := flag.Int("v", 0,
 		"Specify the major version of the chromedriver (default: 0 = Same as installed Google chrome version)")
@@ -29,6 +29,7 @@ func main() {
 		if err != nil { // Handle errors reading the config file
 			logger.Fatalf("Have you done the install part (-i)? An error occurred while reading config file: %v", err)
 		}
+		logger.Infof("Config file found, path: %s", viper.GetString("configPath"))
 	}
 
 	if *install {
@@ -43,10 +44,10 @@ func main() {
 	}
 
 	if *output == "" {
-		*output = viper.GetString("path")
-		fmt.Println(*output)
+		*output = viper.GetString("configPath")
 		logger.Infof("Empty flag detected, file path set to %s", *output)
 	}
+
 	app := src.NewApp(logger)
 	app.InitApp(*version, *output)
 }
@@ -78,7 +79,6 @@ func installViper() error {
 	}
 	pathInput := scanner.Text()
 	strings.Contains(pathInput, "\n")
-	fmt.Println(pathInput)
 	viper.Set("configPath", pathInput)
 	return viper.WriteConfigAs(os.Getenv("HOME") + "/.config/Chromedriver_Updater/config.yaml")
 }
