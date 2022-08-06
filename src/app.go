@@ -94,8 +94,3 @@ func (app *App) InitApp(version int, strArgs string) *App {
 	logger.Infof("Your chromedriver is up to date (version: %s).", chromedriverVersion)
 	return app
 }
-
-/*
-[] print every step in console
-[] implement flags
-*/

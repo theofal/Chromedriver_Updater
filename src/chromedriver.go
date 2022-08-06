@@ -20,7 +20,6 @@ type Chromedriver struct {
 func (chromedriver *Chromedriver) verifyChromedriverExists() bool {
 	logger.Info("Verifying chromedriver exists.")
 	if osInfo.OS == "mac" || osInfo.OS == "linux" {
-		//chromedriver.path = "/usr/local/bin/chromedriver"
 		_, err := os.Stat(chromedriver.path)
 		chromedriver.exists = !os.IsNotExist(err)
 		return chromedriver.exists
