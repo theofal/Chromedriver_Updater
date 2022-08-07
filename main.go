@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/theofal/Chromedriver_Updater/src"
 	"github.com/theofal/Chromedriver_Updater/src/utils/zaplogger"
+	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
 	"strings"
@@ -25,43 +26,14 @@ func main() {
 		"Specify the major version of the chromedriver (default: 0 = Same as installed Google chrome version)")
 	flag.Parse()
 
-	i := false
-
-	for !i {
-		err := initViper()
-		if err != nil { // Handle errors reading the config file
-			fmt.Print("No config file found. Do you want to install it? [y/n]: ")
-			// Taking input from user
-			scanner := bufio.NewScanner(os.Stdin)
-			scanner.Scan()
-			err = scanner.Err()
-			if err != nil {
-				logger.Fatalf("An error occured while scanning response: %v", err)
-			}
-			if strings.ToLower(scanner.Text()) == "y" {
-				err := installViper()
-				if err != nil {
-					logger.Fatalf("An error occurred while trying to configure the app: %v", err)
-				}
-				i = true
-			}
-			if strings.ToLower(scanner.Text()) == "n" {
-				os.Exit(0)
-			}
-			continue
-			//logger.Fatalf("Have you done the install part (-i)? An error occurred while reading config file: %v", err)
-		}
-		i = true
-		logger.Infof("Config file found, path: %s", viper.GetString("configPath"))
-	}
-
 	if *version < 0 {
 		logger.Fatalf("Version number cannot be negative.")
 	}
 
 	if *output == "" {
+		configureAppFile(logger)
 		*output = viper.GetString("configPath")
-		logger.Infof("Empty flag detected, file path set to %s", *output)
+		logger.Infof("File path set to %s", *output)
 	}
 
 	app := src.NewApp(logger)
@@ -97,4 +69,35 @@ func installViper() error {
 	strings.Contains(pathInput, "\n")
 	viper.Set("configPath", pathInput)
 	return viper.WriteConfigAs(os.Getenv("HOME") + "/.config/Chromedriver_Updater/config.yaml")
+}
+
+func configureAppFile(logger *zap.SugaredLogger) {
+	i := false
+
+	for !i {
+		err := initViper()
+		if err != nil { // Handle errors reading the config file
+			fmt.Print("No config file found. Do you want to install it? [y/n]: ")
+			// Taking input from user
+			scanner := bufio.NewScanner(os.Stdin)
+			scanner.Scan()
+			err = scanner.Err()
+			if err != nil {
+				logger.Fatalf("An error occured while scanning response: %v", err)
+			}
+			if strings.ToLower(scanner.Text()) == "y" {
+				err := installViper()
+				if err != nil {
+					logger.Fatalf("An error occurred while trying to configure the app: %v", err)
+				}
+				i = true
+			}
+			if strings.ToLower(scanner.Text()) == "n" {
+				os.Exit(0)
+			}
+			continue
+		}
+		i = true
+		logger.Infof("Config file found, path: %s", viper.GetString("configPath"))
+	}
 }
