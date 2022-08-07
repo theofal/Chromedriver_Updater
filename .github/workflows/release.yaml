@@ -18,5 +18,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          binary_name: "test-binary"
+          binary_name: "ChromedriverUpdater"
           extra_files: LICENSE README.md

@@ -6,6 +6,8 @@ endif
 # LOCAL
 run:
 	go run $(PROJECT_PATH)
+build:
+	go build -o ChromedriverUpdater .
 test:
 	go test -v --cover ./...
 benchmark:

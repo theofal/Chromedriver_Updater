@@ -12,6 +12,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -46,7 +47,7 @@ func main() {
 	}
 
 	app := src.NewApp(logger)
-	app.InitApp(*version, *file)
+	app.InitApp(*version, filepath.Clean(*file))
 }
 
 func initViper() error {
