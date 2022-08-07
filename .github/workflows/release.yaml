@@ -10,7 +10,10 @@ jobs:
       matrix:
         # build and publish in parallel: linux/amd64, windows/amd64, darwin/amd64
         goos: [darwin, linux] #TODO: add windows
-        goarch: [amd64]
+        goarch: [amd64, arm64]
+        exclude:
+          - goarch: arm64
+            goos: darwin
     steps:
       - uses: actions/checkout@v3
       - uses: wangyoucao577/go-release-action@v1.30
