@@ -20,8 +20,9 @@ func main() {
 
 	// flags:
 	// -v (--version) get the latest version from a given major version (int)
-	// -o (--output) set chromedriver path manually (default /usr/local/bin) (string)
-	output := flag.String("f", viper.GetString("configPath"), "Specify the folder where the binary will be installed")
+	// -o (--file) set chromedriver path manually (default /usr/local/bin) (string)
+	file := flag.String("f", viper.GetString("configPath"), "Specify the folder where the binary will be installed")
+	install := flag.Bool("i", false, "Configure the chromedriver path")
 	version := flag.Int("v", 0,
 		"Specify the major version of the chromedriver (default: 0 = Same as installed Google chrome version)")
 	flag.Parse()
@@ -30,14 +31,22 @@ func main() {
 		logger.Fatalf("Version number cannot be negative.")
 	}
 
-	if *output == "" {
-		configureAppFile(logger)
-		*output = viper.GetString("configPath")
-		logger.Infof("File path set to %s", *output)
+	if *file == "" {
+		if !*install {
+			configureAppFile(logger)
+		}
+		if *install {
+			err := installViper()
+			if err != nil {
+				logger.Fatalf("An error occurred while configuring file: %v", err)
+			}
+		}
+		*file = viper.GetString("configPath")
+		logger.Infof("File path set to %s", *file)
 	}
 
 	app := src.NewApp(logger)
-	app.InitApp(*version, *output)
+	app.InitApp(*version, *file)
 }
 
 func initViper() error {
