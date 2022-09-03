@@ -31,7 +31,7 @@ If you need to reconfigure the chromedriver path, simply usr the `-i` flag.
 
 ## Flags
 ```
-$ ./Chromedriver_Updater -h                     (main✱)
+$ ./Chromedriver_Updater -h
 Usage of ./Chromedriver_Updater:
   -f string
     	Specify the folder where the binary will be installed
@@ -46,8 +46,8 @@ Usage of ./Chromedriver_Updater:
 
 - [x] Tested on mac amd64
 
-- [ ] Tested on mac arm64
+- [x] Tested on mac arm64
 
 - [x] Tested on linux
 
-- [ ] Tested on windows
+*Not compatible with windows*
