@@ -8,13 +8,15 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
 type Chromedriver struct {
-	version string
-	path    string
-	exists  bool
+	majorVersion string
+	version      string
+	path         string
+	exists       bool
 }
 
 func (chromedriver *Chromedriver) verifyChromedriverExists() bool {
@@ -40,8 +42,9 @@ func (chromedriver *Chromedriver) getChromedriverVersion() string {
 			if err != nil {
 				logger.Fatal(err)
 			}
-
 			chromedriver.version = strings.Split(string(out), " ")[1]
+			chromedriver.majorVersion = strings.Split(chromedriver.version, ".")[0]
+			fmt.Println(chromedriver.majorVersion)
 			logger.Infof("Chromedriver binary detected: %s, %s", chromedriver.version, chromedriver.path)
 			return chromedriver.version
 		}
@@ -80,6 +83,12 @@ func getLatestReleaseForSpecificVersion(majorVersion string) string {
 }
 
 func (chromedriver *Chromedriver) downloadChromedriver(version string) *Chromedriver {
+	major, _ := strconv.Atoi(chromedriver.majorVersion)
+	if major >= 106 && osInfo.ARCH == "64_m1" {
+		osInfo.ARCH = "_arm64"
+	}
+	fmt.Println(chromedriver.majorVersion)
+	fmt.Println(osInfo.ARCH)
 	downloadPath := fmt.Sprintf(
 		"https://chromedriver.storage.googleapis.com/%s/chromedriver_%s%s.zip", version, osInfo.OS, osInfo.ARCH,
 	)
@@ -110,12 +119,6 @@ func (chromedriver *Chromedriver) downloadChromedriver(version string) *Chromedr
 	if err != nil {
 		logger.Errorf("An error occurred while creating file: %s", err)
 	}
-	defer func(out *os.File) {
-		err := out.Close()
-		if err != nil {
-			logger.Errorf("An error occurred while closing destination file: %s", err)
-		}
-	}(out)
 
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
@@ -144,7 +147,7 @@ func (chromedriver *Chromedriver) unzipChromedriver() *Chromedriver {
 func (chromedriver *Chromedriver) removeFile(path string) *Chromedriver {
 	_, err := os.Stat(path)
 	if err == nil {
-		err := os.Remove(path)
+		err := os.RemoveAll(path)
 		if err != nil {
 			logger.Fatal(err)
 		}
