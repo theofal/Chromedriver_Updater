@@ -2,7 +2,6 @@ package src
 
 import (
 	"fmt"
-	"github.com/theofal/Chromedriver_Updater/src/utils"
 	"io"
 	"log"
 	"net/http"
@@ -10,6 +9,8 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/theofal/Chromedriver_Updater/src/utils"
 )
 
 type Chromedriver struct {
@@ -44,7 +45,6 @@ func (chromedriver *Chromedriver) getChromedriverVersion() string {
 			}
 			chromedriver.version = strings.Split(string(out), " ")[1]
 			chromedriver.majorVersion = strings.Split(chromedriver.version, ".")[0]
-			fmt.Println(chromedriver.majorVersion)
 			logger.Infof("Chromedriver binary detected: %s, %s", chromedriver.version, chromedriver.path)
 			return chromedriver.version
 		}
@@ -83,12 +83,10 @@ func getLatestReleaseForSpecificVersion(majorVersion string) string {
 }
 
 func (chromedriver *Chromedriver) downloadChromedriver(version string) *Chromedriver {
-	major, _ := strconv.Atoi(chromedriver.majorVersion)
+	major, _ := strconv.Atoi(strings.Split(version, ".")[0])
 	if major >= 106 && osInfo.ARCH == "64_m1" {
 		osInfo.ARCH = "_arm64"
 	}
-	fmt.Println(chromedriver.majorVersion)
-	fmt.Println(osInfo.ARCH)
 	downloadPath := fmt.Sprintf(
 		"https://chromedriver.storage.googleapis.com/%s/chromedriver_%s%s.zip", version, osInfo.OS, osInfo.ARCH,
 	)
