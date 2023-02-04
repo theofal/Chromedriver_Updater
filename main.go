@@ -6,14 +6,15 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/spf13/viper"
 	"github.com/theofal/Chromedriver_Updater/src"
 	"github.com/theofal/Chromedriver_Updater/src/utils/zaplogger"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 func initViper() error {
