@@ -24,28 +24,34 @@ func initViper() error {
 	return viper.ReadInConfig()                                               // Find and read the config file
 }
 
-func installViper() error {
+func installViper(file string) (string, error) {
 	err := os.MkdirAll(os.Getenv("HOME")+"/.config/Chromedriver_Updater/", 0777)
 	if err != nil {
-		return err
+		return "", err
 	}
 	_, err = os.Create(os.Getenv("HOME") + "/.config/Chromedriver_Updater/config.yaml")
 	if err != nil {
-		return err
+		return "", err
 	}
-	fmt.Println("Enter the path to your Chromedriver: ")
 
-	// Taking input from user
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	err = scanner.Err()
-	if err != nil {
-		return err
+	if file == "" {
+		fmt.Println("Enter the path to your Chromedriver: ")
+		// Taking input from user
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+		err = scanner.Err()
+		if err != nil {
+			return "", err
+		}
+		pathInput := scanner.Text()
+		strings.Contains(pathInput, "\n")
+		viper.Set("configPath", pathInput)
 	}
-	pathInput := scanner.Text()
-	strings.Contains(pathInput, "\n")
-	viper.Set("configPath", pathInput)
-	return viper.WriteConfigAs(os.Getenv("HOME") + "/.config/Chromedriver_Updater/config.yaml")
+	if file != "" {
+		viper.Set("configPath", file)
+	}
+	fileName := os.Getenv("HOME") + "/.config/Chromedriver_Updater/config.yaml"
+	return fileName, viper.WriteConfigAs(fileName)
 }
 
 func configureAppFile(logger *zap.SugaredLogger) {
@@ -63,10 +69,11 @@ func configureAppFile(logger *zap.SugaredLogger) {
 				logger.Fatalf("An error occured while scanning response: %v", err)
 			}
 			if strings.ToLower(scanner.Text()) == "y" {
-				err := installViper()
+				configFilePath, err := installViper("")
 				if err != nil {
 					logger.Fatalf("An error occurred while trying to configure the app: %v", err)
 				}
+				logger.Infof("Config file created: %s", configFilePath)
 				i = true
 			}
 			if strings.ToLower(scanner.Text()) == "n" {
@@ -75,7 +82,7 @@ func configureAppFile(logger *zap.SugaredLogger) {
 			continue
 		}
 		i = true
-		logger.Infof("Config file found, path: %s", viper.GetString("configPath"))
+		logger.Infof("Config file found, chromedriver path: %s", viper.GetString("configPath"))
 	}
 }
 
@@ -83,9 +90,11 @@ func main() {
 	logger := zaplogger.InitLogger(zapcore.DebugLevel, zapcore.DebugLevel).Sugar()
 
 	// -f (--file) set chromedriver path manually (default /usr/local/bin) (string)
-	file := flag.String("f", viper.GetString("configPath"), "Specify the folder where the binary will be installed")
+	file := flag.String("f", viper.GetString("configPath"),
+		"Specify the folder where the binary will be installed. Add the '-i' flag to save it in the config file.")
 	// -i (--install) configure the chromedriver path
-	install := flag.Bool("i", false, "Configure the chromedriver path")
+	install := flag.Bool("i", false, "Update the chromedriver path in the config file. "+
+		"if none exists, it will create one.")
 	// -v (--version) get the latest version from a given major version (int)
 	version := flag.Int("v", 0,
 		"Specify the major version of the chromedriver (default: 0 = Same as installed Google chrome version)")
@@ -96,20 +105,21 @@ func main() {
 		logger.Fatalf("Version number cannot be negative.")
 	}
 
-	if *file == "" {
-		if !*install {
-			configureAppFile(logger)
-		}
-		if *install {
-			err := installViper()
-			if err != nil {
-				logger.Fatalf("An error occurred while configuring file: %v", err)
-			}
-		}
+	if !*install && *file == "" {
+		configureAppFile(logger)
 		*file = viper.GetString("configPath")
-		logger.Infof("File path set to %s", *file)
+	}
+	if *install {
+		configFilePath, err := installViper(*file)
+		if err != nil {
+			logger.Fatalf("An error occurred while configuring file: %v", err)
+		}
+		logger.Infof("Config file path created:  %s", configFilePath)
+		*file = viper.GetString("configPath")
+		logger.Infof("Chromedriver path set to %s", *file)
 	}
 
 	app := src.NewApp(logger)
+	fmt.Println(*file)
 	app.InitApp(*version, filepath.Clean(*file))
 }
