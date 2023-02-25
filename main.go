@@ -94,7 +94,7 @@ func main() {
 		"Specify the folder where the binary will be installed. Add the '-i' flag to save it in the config file.")
 	// -i (--install) configure the chromedriver path
 	install := flag.Bool("i", false, "Update the chromedriver path in the config file. "+
-		"if none exists, it will create one.")
+		"if no config file exists, it will create one.")
 	// -v (--version) get the latest version from a given major version (int)
 	version := flag.Int("v", 0,
 		"Specify the major version of the chromedriver (default: 0 = Same as installed Google chrome version)")

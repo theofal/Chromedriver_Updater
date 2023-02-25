@@ -31,13 +31,15 @@ If you need to reconfigure the chromedriver path, simply use the `-i` flag.
 
 ## Flags
 ```
-Usage of ./ChromedriverUpdater:
+$ ChromedriverUpdater -h
+Usage of ChromedriverUpdater:
   -f string
         Specify the folder where the binary will be installed. 
         Add the '-i' flag to save it in the config file.
         
-  -i    Update the chromedriver path in the config file.
-  
+  -i    Update the chromedriver path in the config file. 
+        if no config file exists, it will create one.
+        
   -v int
         Specify the major version of the chromedriver 
         (default: 0 = Same as installed Google chrome version)
