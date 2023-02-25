@@ -46,9 +46,11 @@ func (zipper *zipper) UnzipSource() error {
 
 	// 3. Iterate over zip files inside the archive and unzip each of them
 	for _, f := range reader.File {
-		err := unzipFile(f, zipper.destination)
-		if err != nil {
-			return err
+		if f.Name == "chromedriver" {
+			err := unzipFile(f, zipper.destination)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
