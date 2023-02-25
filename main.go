@@ -82,7 +82,8 @@ func configureAppFile(logger *zap.SugaredLogger) {
 			continue
 		}
 		i = true
-		logger.Infof("Config file found, chromedriver path: %s", viper.GetString("configPath"))
+		logger.Infof("Config file found: %s",
+			os.Getenv("HOME")+"/.config/Chromedriver_Updater/config.yaml")
 	}
 }
 
@@ -115,8 +116,6 @@ func main() {
 			logger.Fatalf("An error occurred while configuring file: %v", err)
 		}
 		logger.Infof("Config file path created:  %s", configFilePath)
-		*file = viper.GetString("configPath")
-		logger.Infof("Chromedriver path set to %s", *file)
 	}
 
 	app := src.NewApp(logger)

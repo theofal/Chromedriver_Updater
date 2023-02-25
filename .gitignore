@@ -5,3 +5,6 @@ logs/
 # FILES
 .env
 tags
+
+# BINARIES
+ChromedriverUpdater
