@@ -119,6 +119,5 @@ func main() {
 	}
 
 	app := src.NewApp(logger)
-	fmt.Println(*file)
 	app.InitApp(*version, filepath.Clean(*file))
 }
