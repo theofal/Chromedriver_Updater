@@ -54,4 +54,3 @@ Usage of ChromedriverUpdater:
 - [x] Tested on linux
 
 *Not compatible with windows*
-a
