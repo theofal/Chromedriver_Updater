@@ -2,11 +2,12 @@ package src
 
 import (
 	"fmt"
-	"github.com/theofal/Chromedriver_Updater/src/utils/zaplogger"
-	"go.uber.org/zap/zapcore"
 	"math/rand"
 	"os"
 	"testing"
+
+	"github.com/theofal/Chromedriver_Updater/src/utils/zaplogger"
+	"go.uber.org/zap/zapcore"
 )
 
 func TestMain(m *testing.M) {

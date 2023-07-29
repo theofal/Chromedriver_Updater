@@ -1,6 +1,7 @@
 # FOLDERS
 .idea/
 logs/
+.git
 
 # FILES
 .env
@@ -8,3 +9,5 @@ tags
 
 # BINARIES
 ChromedriverUpdater
+**/*.DS_Store
+

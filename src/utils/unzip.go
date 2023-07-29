@@ -46,7 +46,7 @@ func (zipper *zipper) UnzipSource() error {
 
 	// 3. Iterate over zip files inside the archive and unzip each of them
 	for _, f := range reader.File {
-		if f.Name == "chromedriver" {
+		if !strings.Contains(strings.ToLower(f.Name), "license") {
 			err := unzipFile(f, zipper.destination)
 			if err != nil {
 				return err
@@ -65,7 +65,6 @@ func unzipFile(file *zip.File, destination string) error {
 	if err != nil {
 		logger.Fatal(err)
 	}
-
 	// 5. Create directory tree
 	if file.FileInfo().IsDir() {
 		if err := os.MkdirAll(filePath, os.ModePerm); err != nil {
@@ -114,6 +113,11 @@ func unzipFile(file *zip.File, destination string) error {
 }
 
 func sanitizeArchivePath(destination, file string) (path string, err error) {
+	file = strings.ReplaceAll(file, "chromedriver-mac-x64/", "")
+	file = strings.ReplaceAll(file, "chromedriver-mac-arm64/", "")
+	file = strings.ReplaceAll(file, "chromedriver-linux64/", "")
+	file = strings.ReplaceAll(file, "chromedriver-win32/", "")
+	file = strings.ReplaceAll(file, "chromedriver-win64/", "")
 	path = filepath.Join(destination, file)
 	if strings.HasPrefix(path, filepath.Clean(destination)) {
 		return path, nil

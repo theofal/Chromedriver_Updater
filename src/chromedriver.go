@@ -1,6 +1,7 @@
 package src
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -18,6 +19,7 @@ type Chromedriver struct {
 	version      string
 	path         string
 	exists       bool
+	downloadPath string
 }
 
 func (chromedriver *Chromedriver) verifyChromedriverExists() bool {
@@ -59,7 +61,26 @@ func (chromedriver *Chromedriver) getChromedriverVersion() string {
 	return ""
 }
 
-func getLatestReleaseForSpecificVersion(majorVersion string) string {
+func getDownloadPathForVersionBelow115(majorVersion string) (string, string) {
+
+	major, _ := strconv.Atoi(majorVersion)
+	if major >= 106 && osInfo.ARCHForVersionBelow115 == "64_m1" {
+		osInfo.ARCHForVersionBelow115 = "_arm64"
+	}
+
+	version := getLatestReleaseForSpecificVersionBelow115(majorVersion)
+
+	downloadPath := fmt.Sprintf(
+		"https://chromedriver.storage.googleapis.com/%s/chromedriver_%s%s.zip",
+		version,
+		osInfo.OS,
+		osInfo.ARCHForVersionBelow115,
+	)
+
+	return downloadPath, version
+}
+
+func getLatestReleaseForSpecificVersionBelow115(majorVersion string) string {
 	response, err := http.Get("https://chromedriver.storage.googleapis.com/LATEST_RELEASE_" + majorVersion)
 	if err != nil {
 		logger.Fatal(err)
@@ -82,14 +103,45 @@ func getLatestReleaseForSpecificVersion(majorVersion string) string {
 	return ""
 }
 
-func (chromedriver *Chromedriver) downloadChromedriver(version string) *Chromedriver {
-	major, _ := strconv.Atoi(strings.Split(version, ".")[0])
-	if major >= 106 && osInfo.ARCH == "64_m1" {
-		osInfo.ARCH = "_arm64"
-	}
-	downloadPath := fmt.Sprintf(
-		"https://chromedriver.storage.googleapis.com/%s/chromedriver_%s%s.zip", version, osInfo.OS, osInfo.ARCH,
+func getDownloadPathForVersionAboveOrEqual115(majorVersion string) Version {
+	var chromeForTesting ChromeForTesting
+	var tmpVersions []Version
+
+	response, err := http.Get(
+		"https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json",
 	)
+
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			logger.Fatal(err)
+		}
+	}(response.Body)
+
+	if response.StatusCode == http.StatusOK {
+		bodyBytes, err := io.ReadAll(response.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(bodyBytes, &chromeForTesting)
+	}
+
+	for _, version := range chromeForTesting.Versions {
+		if parseMajorVersion(version.Version) == majorVersion {
+			tmpVersions = append(tmpVersions, version)
+		}
+	}
+
+	return tmpVersions[len(tmpVersions)-1]
+}
+
+func (chromedriver *Chromedriver) downloadChromedriver(downloadPath string) *Chromedriver {
+
 	zipFilePath := "/tmp/chromedriver.zip"
 	logger.Infof("Downloading from: %s", downloadPath)
 
@@ -125,7 +177,7 @@ func (chromedriver *Chromedriver) downloadChromedriver(version string) *Chromedr
 	}
 
 	chromedriver.exists = true
-	chromedriver.version = version
+	//chromedriver.version = version
 	return chromedriver.unzipChromedriver()
 }
 
