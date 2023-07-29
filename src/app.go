@@ -82,7 +82,7 @@ func (app *App) InitApp(version int, strArgs string) *App {
 	chromeVersion := app.chrome.getChromeVersion()
 	chromedriverVersion := app.chromedriver.getChromedriverVersion()
 
-	// If the specific major version chosen is above or equal to 115
+	// If a major version is specified and is above or equal to 115
 	if version >= 115 {
 		vers := strconv.Itoa(version)
 		majorVersion := parseMajorVersion(vers)
@@ -92,10 +92,13 @@ func (app *App) InitApp(version int, strArgs string) *App {
 				downloadPath = s.URL
 			}
 		}
+
+		app.chromedriver.version = latestSpecificVersionData.Version
+		app.chromedriver = app.chromedriver.downloadChromedriver(downloadPath)
 		return app
 	}
 
-	// If the specific major version chosen is below 115
+	// If a major version is specified and is below 115
 	if version != 0 {
 		vers := strconv.Itoa(version)
 		majorVersion := parseMajorVersion(vers)
