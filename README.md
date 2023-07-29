@@ -9,7 +9,7 @@ It is then used to compare the existing version of Google Chrome to your Chromed
 
 If you need to reconfigure the chromedriver path, simply use the `-i` flag. 
 
-/!\ : Still work in progress. Do not use it without verifying compatibility in the Troubleshooting section. **Windows not supported yet.**
+⚠️ : Still work in progress. Do not use it without verifying compatibility in the Troubleshooting section. **Windows not supported yet.**
 
 ## How to launch it:
 - Clone the repository:
